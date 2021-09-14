@@ -5,6 +5,8 @@ import com.example.hospital.model.dto.ChamberDto;
 import com.example.hospital.repository.ChamberRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +25,14 @@ public class ChamberController {
     ModelMapper mapper;
 
     @GetMapping("/chambers")
-    public ResponseEntity<List<ChamberDto>> getAllChambers(){
+    public ResponseEntity<List<ChamberDto>> getAllChambers(@RequestParam Optional<Integer> page,
+                                                           @RequestParam Optional<String> sortBy){
         try {
-            List<Chamber> chambers=chamberRepository.findAll();;
+            List<Chamber> chambers=chamberRepository.findAll(PageRequest.of(
+                    page.orElse(0),
+                    3,
+                    Sort.Direction.ASC,sortBy.orElse("id")
+            )).stream().collect(Collectors.toList());
             if(chambers.isEmpty()){
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }

@@ -28,11 +28,4 @@ public class Chamber {
         this.number = number;
     }
 
-    @Override
-    public String toString() {
-        return "Chamber{" +
-                "id=" + id +
-                ", number=" + number +
-                '}';
-    }
 }

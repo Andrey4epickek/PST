@@ -1,15 +1,18 @@
 package com.example.hospital.controller;
 
+import com.example.hospital.model.Chamber;
 import com.example.hospital.model.Doctor;
 import com.example.hospital.model.dto.DoctorDto;
 import com.example.hospital.repository.DoctorRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,10 +27,14 @@ public class DoctorController {
     ModelMapper mapper;
 
     @GetMapping("/doctors")
-    public ResponseEntity<List<DoctorDto>> getAllDoctors(){
+    public ResponseEntity<List<DoctorDto>> getAllDoctors(@RequestParam Optional<Integer> page,
+                                         @RequestParam Optional<String> sortBy){
         try {
-            List<Doctor> doctors=new ArrayList<>();
-            doctorRepository.findAll().forEach(doctors::add);
+            List<Doctor> doctors=doctorRepository.findAll(PageRequest.of(
+                    page.orElse(0),
+                    3,
+                    Sort.Direction.ASC,sortBy.orElse("id")
+            )).stream().collect(Collectors.toList());
             if(doctors.isEmpty()){
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
