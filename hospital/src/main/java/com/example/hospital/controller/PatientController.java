@@ -1,9 +1,11 @@
 package com.example.hospital.controller;
 
+import com.example.hospital.model.Medicament;
 import com.example.hospital.model.Patient;
 import com.example.hospital.model.dto.PatientDto;
 import com.example.hospital.repository.ChamberRepository;
 import com.example.hospital.repository.DoctorRepository;
+import com.example.hospital.repository.MedicamentRepository;
 import com.example.hospital.repository.PatientRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,6 +30,8 @@ public class PatientController {
     ChamberRepository chamberRepository;
     @Autowired
     DoctorRepository doctorRepository;
+    @Autowired
+    MedicamentRepository medicamentRepository;
     @Autowired
     ModelMapper mapper;
 
@@ -63,7 +68,8 @@ public class PatientController {
     @PostMapping("/patients")
     public ResponseEntity<PatientDto> createPatient(@RequestBody PatientDto patientDto){
         try {
-            patientRepository.save(new Patient(patientDto.getName(),patientDto.getAge(),chamberRepository.getById(patientDto.getChamberId()), doctorRepository.getById(patientDto.getDoctorId())));
+
+            patientRepository.save(new Patient(patientDto.getName(),patientDto.getAge(),chamberRepository.getById(patientDto.getChamberId()), doctorRepository.getById(patientDto.getDoctorId()),medicamentRepository.findAllById(patientDto.getMedicamentId())));
             return new ResponseEntity<>(patientDto,HttpStatus.OK);
         }catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -108,7 +114,19 @@ public class PatientController {
     }
 
     private PatientDto convertToDto(Patient patient){
-        PatientDto patientDto=mapper.map(patient,PatientDto.class);
+        PatientDto patientDto=new PatientDto();
+        patientDto.setName(patient.getName());
+        patientDto.setAge(patient.getAge());
+        patientDto.setChamberId(patient.getChamber().getId());
+        patientDto.setDoctorId(patient.getDoctor().getId());
+
+        List<Medicament> medicaments=patient.getMedicaments();
+        List<Long> medicamentsId=new ArrayList<>();
+        for (Medicament medicament:medicaments){
+            medicamentsId.add(medicament.getId());
+        }
+
+        patientDto.setMedicamentId(medicamentsId);
         return patientDto;
     }
 
