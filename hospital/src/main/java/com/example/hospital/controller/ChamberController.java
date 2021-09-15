@@ -30,7 +30,7 @@ public class ChamberController {
         try {
             List<Chamber> chambers=chamberRepository.findAll(PageRequest.of(
                     page.orElse(0),
-                    3,
+                    5,
                     Sort.Direction.ASC,sortBy.orElse("id")
             )).stream().collect(Collectors.toList());
             if(chambers.isEmpty()){

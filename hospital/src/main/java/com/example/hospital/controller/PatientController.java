@@ -41,7 +41,7 @@ public class PatientController {
         try {
             List<Patient> patients=patientRepository.findAll(PageRequest.of(
                     page.orElse(0),
-                    1,
+                    5,
                     Sort.Direction.ASC,sortBy.orElse("id")
             )).stream().collect(Collectors.toList());
             if(patients.isEmpty()){

@@ -31,7 +31,7 @@ public class MedicamentController {
         try {
             List<Medicament> medicaments=medicamentRepository.findAll(PageRequest.of(
                     page.orElse(0),
-                    3,
+                    5,
                     Sort.Direction.ASC,sortBy.orElse("id")
             )).stream().collect(Collectors.toList());
             if(medicaments.isEmpty()){

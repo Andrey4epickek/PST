@@ -32,7 +32,7 @@ public class DoctorController {
         try {
             List<Doctor> doctors=doctorRepository.findAll(PageRequest.of(
                     page.orElse(0),
-                    3,
+                    5,
                     Sort.Direction.ASC,sortBy.orElse("id")
             )).stream().collect(Collectors.toList());
             if(doctors.isEmpty()){
